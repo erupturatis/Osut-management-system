@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${name}">Title</title>
+    <style>
+        .filters {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1 th:text="'Hello, ADMIN ' + ${name} + '!'">Hello, ADMIN</h1>
+
+<form action="#" th:action="@{/admin}" method="get" class="filters">
+    <fieldset>
+        <legend>Departments</legend>
+        <ul>
+            <li th:each="department : ${departments}">
+                <label th:for="${'dept-' + department.department_id}">
+                    <input type="radio" th:id="${'dept-' + department.department_id}" th:name="filter" th:value="${department.department_id}">
+                    <span th:text="${department.department_name}">Department Name</span>
+                </label>
+            </li>
+        </ul>
+    </fieldset>
+
+    <fieldset>
+        <legend>Sort</legend>
+        <label for="sortByAttendance">
+            <input type="checkbox" id="sortByAttendance" name="sort" value="attendance">
+            Sort by attendance
+        </label>
+    </fieldset>
+
+    <button type="submit">Apply Filters</button>
+</form>
+
+<div>
+    <h2>Students</h2>
+    <ul>
+        <li th:each="user : ${users}">
+            <a th:href="@{'/' + ${user.user_id}}" th:text="${user.user_id}">User Name</a>
+        </li>
+    </ul>
+</div>
+<a href="/create" class="create-button">Create Student</a>
+
+</body>
+</html>

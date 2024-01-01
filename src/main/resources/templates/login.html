@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login page</title>
+    <script>
+        // Function to handle the form submission
+        function submitForm(event) {
+            // Prevent the default form submission
+            event.preventDefault();
+
+            // Get the form data
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Create a JSON object with the data
+            const data = {
+                username: username,
+                password: password
+            };
+
+            // Send the data using fetch
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the content type to JSON
+                },
+                body: JSON.stringify(data), // Convert the JSON object to a string
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    // redurect to /{name}
+                    window.location.href = "/" + data.name;
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    // Handle errors, e.g., display an error message
+                });
+        }
+
+        // Add event listener to the form
+        window.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelector('form').addEventListener('submit', submitForm);
+        });
+    </script>
+</head>
+<body>
+<div>
+    <h1>Login page</h1>
+    <form>
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="username">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="password">
+        <input type="submit" value="Login">
+    </form>
+</div>
+</body>
+</html>
