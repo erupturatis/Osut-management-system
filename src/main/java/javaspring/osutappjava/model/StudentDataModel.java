@@ -19,12 +19,29 @@ public class StudentDataModel {
    public List<Department> getDepartments() {
        String sqlQuery = "SELECT * FROM department;";
        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(Department.class));
-    }
+   }
+
 
    public List<User> getUsers() {
         String sqlQuery = "SELECT * FROM public.user;";
         return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(User.class));
    }
+
+    public List<Project> getProjects() {
+          String sqlQuery = "SELECT * FROM public.project;";
+          return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(Project.class));
+    }
+
+    public boolean checkUserExists(String userId) {
+        String sqlQuery = "SELECT COUNT(*) FROM public.user WHERE user_id = ?;";
+        try {
+            int count = jdbcTemplate.queryForObject(sqlQuery, new Object[]{userId}, Integer.class);
+            return count > 0;
+        } catch (Exception e) {
+            System.out.println("Error in checking if user exists: " + e.getMessage());
+            return false;
+        }
+    }
 
 
     public List<User> getUsers(Optional<String> filter, boolean sortByAttendance) {
@@ -116,6 +133,72 @@ public class StudentDataModel {
             return true;
         } catch (Exception e) {
             System.out.println("Error in adding user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean deleteUser(String userId) {
+        String sqlQuery = "DELETE FROM public.user WHERE user_id = ?;";
+        try {
+            jdbcTemplate.update(sqlQuery, userId);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error in deleting user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean removeDepartmentFromUser(String userId, String departmentId) {
+        String sqlQuery = "DELETE FROM user_department WHERE user_id = ? AND department_id = ?;";
+        try {
+            jdbcTemplate.update(sqlQuery, userId, departmentId);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error in removing department from user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean removeProjectFromUser(String userId, String projectId) {
+        String sqlQuery = "DELETE FROM user_project WHERE user_id = ? AND project_id = ?;";
+        try {
+            jdbcTemplate.update(sqlQuery, userId, projectId);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error in removing project from user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean addDepartmentToUser(String userId, String departmentId) {
+        String sqlQuery = "INSERT INTO user_department (user_id, department_id) VALUES (?, ?);";
+        try {
+            jdbcTemplate.update(sqlQuery, userId, departmentId);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error in adding department to user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean addProjectToUser(String userId, String projectId) {
+        String sqlQuery = "INSERT INTO user_project (user_id, project_id) VALUES (?, ?);";
+        try {
+            jdbcTemplate.update(sqlQuery, userId, projectId);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error in adding project to user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean changeUserId(String userId, String newUserId) {
+        String sqlQuery = "UPDATE public.user SET user_id = ? WHERE user_id = ?;";
+        try {
+            jdbcTemplate.update(sqlQuery, newUserId, userId);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error in changing user id: " + e.getMessage());
             return false;
         }
     }
