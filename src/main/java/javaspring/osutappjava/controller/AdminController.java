@@ -60,7 +60,7 @@ public class AdminController {
         model.addAttribute("name", userData.getUsername());
 
         // handle departments
-        List<DepartmentDB> departments = departmentDataModel.getDepartments();
+        List<DepartmentDB> departments = departmentDataModel.getAll();
         model.addAttribute("departments", departments);
 
         // handle users

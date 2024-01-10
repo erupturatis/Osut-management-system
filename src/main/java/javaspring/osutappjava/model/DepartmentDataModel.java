@@ -3,30 +3,27 @@ package javaspring.osutappjava.model;
 import javaspring.osutappjava.dto.DepartmentDB;
 import javaspring.osutappjava.dto.ProjectDB;
 import javaspring.osutappjava.dto.user.UserDB;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public class DepartmentDataModel {
+public class DepartmentDataModel extends BaseModel {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    public List<DepartmentDB> getDepartments() {
+    @Override
+    public List<DepartmentDB> getAll() {
         String sqlQuery = "SELECT * FROM department;";
-        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(DepartmentDB.class));
+        return getJdbcTemplate().query(sqlQuery, new BeanPropertyRowMapper<>(DepartmentDB.class));
     }
 
-    public DepartmentDB getDepartment(String departmentId) {
+    @Override
+    public DepartmentDB getById(String departmentId) {
         String sqlQuery = "SELECT d.* " +
                 "FROM public.department d " +
                 "WHERE d.department_id = ?;";
         try {
-            return jdbcTemplate.queryForObject(sqlQuery, new Object[]{departmentId},
+            return getJdbcTemplate().queryForObject(sqlQuery, new Object[]{departmentId},
                     new BeanPropertyRowMapper<>(DepartmentDB.class));
         } catch (Exception e) {
             System.out.println("Error in fetching department: " + e.getMessage());
@@ -39,7 +36,7 @@ public class DepartmentDataModel {
                 "FROM public.project p " +
                 "WHERE p.department_id = ?;";
         try {
-            return jdbcTemplate.query(sqlQuery, new Object[]{departmentId},
+            return getJdbcTemplate().query(sqlQuery, new Object[]{departmentId},
                     new BeanPropertyRowMapper<>(ProjectDB.class));
         } catch (Exception e) {
             System.out.println("Error in fetching projects: " + e.getMessage());
@@ -56,7 +53,7 @@ public class DepartmentDataModel {
         System.out.println("departmentId: " + departmentId);
 
         try {
-            return jdbcTemplate.query(sqlQuery, new Object[]{departmentId},
+            return getJdbcTemplate().query(sqlQuery, new Object[]{departmentId},
                     new BeanPropertyRowMapper<>(UserDB.class));
         } catch (Exception e) {
             System.out.println("Error in fetching users: " + e.getMessage());

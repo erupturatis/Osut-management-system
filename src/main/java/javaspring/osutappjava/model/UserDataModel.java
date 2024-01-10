@@ -13,15 +13,13 @@ import java.util.Optional;
 import java.util.ArrayList;
 
 @Repository
-public class UserDataModel {
+public class UserDataModel extends BaseModel {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     public boolean checkUserExists(String userId) {
         String sqlQuery = "SELECT COUNT(*) FROM public.user WHERE user_id = ?;";
         try {
-            int count = jdbcTemplate.queryForObject(sqlQuery, new Object[]{userId}, Integer.class);
+            int count = getJdbcTemplate().queryForObject(sqlQuery, new Object[]{userId}, Integer.class);
             return count > 0;
         } catch (Exception e) {
             System.out.println("Error in checking if user exists: " + e.getMessage());
@@ -32,7 +30,7 @@ public class UserDataModel {
     public UserDB authUser(String username, String password) {
         try {
             String sql = "SELECT * FROM public.user WHERE user_id = ? AND user_password = ?";
-            return jdbcTemplate.queryForObject(sql, new Object[]{username, password}, (rs, rowNum) -> {
+            return getJdbcTemplate().queryForObject(sql, new Object[]{username, password}, (rs, rowNum) -> {
                 UserDB user = new UserDB();
                 user.setUser_id(rs.getString("user_id"));
                 user.setUser_password(rs.getString("user_password"));
@@ -72,9 +70,9 @@ public class UserDataModel {
 
         // Execute the SQL query with the appropriate parameters based on whether a filter was provided
         if (!params.isEmpty()) {
-            return jdbcTemplate.query(sqlQuery, params.toArray(), new BeanPropertyRowMapper<>(UserDB.class));
+            return getJdbcTemplate().query(sqlQuery, params.toArray(), new BeanPropertyRowMapper<>(UserDB.class));
         } else {
-            return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(UserDB.class));
+            return getJdbcTemplate().query(sqlQuery, new BeanPropertyRowMapper<>(UserDB.class));
         }
     }
 
@@ -85,7 +83,7 @@ public class UserDataModel {
                 "JOIN public.user u ON ud.user_id = u.user_id " +
                 "WHERE ud.user_id = ?;";
 
-        return jdbcTemplate.query(sqlQuery, new Object[]{userId},
+        return getJdbcTemplate().query(sqlQuery, new Object[]{userId},
                 new BeanPropertyRowMapper<>(DepartmentDB.class));
     }
 
@@ -96,14 +94,14 @@ public class UserDataModel {
                 "JOIN public.user u ON up.user_id = u.user_id " +
                 "WHERE up.user_id = ?;";
 
-        return jdbcTemplate.query(sqlQuery, new Object[]{userId},
+        return getJdbcTemplate().query(sqlQuery, new Object[]{userId},
                 new BeanPropertyRowMapper<>(ProjectDB.class));
     }
 
     public boolean addUser(UserDB user) {
         String sqlQuery = "INSERT INTO public.user (user_id, user_password, is_admin, age, able_to_work) VALUES (?, ?, ?, 10, true);";
         try {
-            jdbcTemplate.update(sqlQuery, user.getUser_id(), user.getUser_password(), user.isIs_admin());
+            getJdbcTemplate().update(sqlQuery, user.getUser_id(), user.getUser_password(), user.isIs_admin());
             return true;
         } catch (Exception e) {
             System.out.println("Error in adding user: " + e.getMessage());
@@ -114,7 +112,7 @@ public class UserDataModel {
     public boolean deleteUser(String userId) {
         String sqlQuery = "DELETE FROM public.user WHERE user_id = ?;";
         try {
-            jdbcTemplate.update(sqlQuery, userId);
+            getJdbcTemplate().update(sqlQuery, userId);
             return true;
         } catch (Exception e) {
             System.out.println("Error in deleting user: " + e.getMessage());
@@ -125,7 +123,7 @@ public class UserDataModel {
     public boolean removeDepartmentFromUser(String userId, String departmentId) {
         String sqlQuery = "DELETE FROM user_department WHERE user_id = ? AND department_id = ?;";
         try {
-            jdbcTemplate.update(sqlQuery, userId, departmentId);
+            getJdbcTemplate().update(sqlQuery, userId, departmentId);
             return true;
         } catch (Exception e) {
             System.out.println("Error in removing department from user: " + e.getMessage());
@@ -136,7 +134,7 @@ public class UserDataModel {
     public boolean addDepartmentToUser(String userId, String departmentId) {
         String sqlQuery = "INSERT INTO user_department (user_id, department_id) VALUES (?, ?);";
         try {
-            jdbcTemplate.update(sqlQuery, userId, departmentId);
+            getJdbcTemplate().update(sqlQuery, userId, departmentId);
             return true;
         } catch (Exception e) {
             System.out.println("Error in adding department to user: " + e.getMessage());
@@ -147,7 +145,7 @@ public class UserDataModel {
     public boolean changeUserId(String userId, String newUserId) {
         String sqlQuery = "UPDATE public.user SET user_id = ? WHERE user_id = ?;";
         try {
-            jdbcTemplate.update(sqlQuery, newUserId, userId);
+            getJdbcTemplate().update(sqlQuery, newUserId, userId);
             return true;
         } catch (Exception e) {
             System.out.println("Error in changing user id: " + e.getMessage());

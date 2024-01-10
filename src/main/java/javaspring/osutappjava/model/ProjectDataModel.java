@@ -6,26 +6,21 @@ import org.springframework.dao.DataAccessException;
 import javaspring.osutappjava.dto.*;
 import javaspring.osutappjava.dto.user.UserDB;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.ArrayList;
 
 
 @Component
-public class ProjectDataModel {
+public class ProjectDataModel extends BaseModel {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
-    public ProjectDB getProject(String project_id) {
+    @Override
+    public ProjectDB getById(String project_id) {
         try {
             String sql = "SELECT * FROM public.project WHERE project_id = ?";
-            return jdbcTemplate.queryForObject(sql, new Object[]{project_id}, (rs, rowNum) -> {
+            return getJdbcTemplate().queryForObject(sql, new Object[]{project_id}, (rs, rowNum) -> {
                 ProjectDB project = new ProjectDB();
                 project.setProject_id(rs.getString("project_id"));
                 project.setProject_name(rs.getString("project_name"));
@@ -45,13 +40,13 @@ public class ProjectDataModel {
         String sqlQuery = "SELECT u.* FROM public.user u " +
                 "JOIN public.user_project up ON u.user_id = up.user_id " +
                 "WHERE up.project_id = ?;";
-        return jdbcTemplate.query(sqlQuery, new Object[]{project_id}, new BeanPropertyRowMapper<>(UserDB.class));
+        return getJdbcTemplate().query(sqlQuery, new Object[]{project_id}, new BeanPropertyRowMapper<>(UserDB.class));
     }
 
     public DepartmentDB getProjectDepartment(String department_id) {
         try {
             String sql = "SELECT * FROM public.department WHERE department_id = ?";
-            return jdbcTemplate.queryForObject(sql, new Object[]{department_id}, (rs, rowNum) -> {
+            return getJdbcTemplate().queryForObject(sql, new Object[]{department_id}, (rs, rowNum) -> {
                 DepartmentDB department = new DepartmentDB();
                 department.setDepartment_id(rs.getString("department_id"));
                 department.setDepartment_name(rs.getString("department_name"));

@@ -37,7 +37,7 @@ public class DepartmentController {
 
         userMiddlewareAuth.checkLogin(request);
 
-        DepartmentDB department = departmentDataModel.getDepartment(department_id);
+        DepartmentDB department = departmentDataModel.getById(department_id);
         List<ProjectDB> projects = departmentDataModel.getDepartmentProjects(department_id);
         List<UserDB> users = departmentDataModel.getDepartmentUsers(department_id);
 

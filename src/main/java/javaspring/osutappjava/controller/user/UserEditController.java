@@ -57,7 +57,7 @@ public class UserEditController {
 
         List<DepartmentDB> departments = studentDataModel.getDepartmentsForUser(name);
         List<ProjectDB> projects = studentDataModel.getProjectsForUser(name);
-        List<DepartmentDB> allDepartments = departmentDataModel.getDepartments();
+        List<DepartmentDB> allDepartments = departmentDataModel.getAll();
 
         List<DepartmentDB> nonJoinedDepartments = new ArrayList<>();
         for (DepartmentDB department : allDepartments) {

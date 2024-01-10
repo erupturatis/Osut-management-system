@@ -34,7 +34,7 @@ public class ProjectController {
 
         userMiddlewareAuth.checkLogin(request);
 
-        ProjectDB project = projectDataModel.getProject(project_id);
+        ProjectDB project = projectDataModel.getById(project_id);
         DepartmentDB department = projectDataModel.getProjectDepartment(project.getDepartment_id());
         List<UserDB> users = projectDataModel.getProjectUsers(project_id);
 
