@@ -1,14 +1,14 @@
 package javaspring.osutappjava.dto;
 
-public class Department {
+public class DepartmentDB {
     private String department_id;
     private String department_name;
     private String department_description;
 
-    public Department() {
+    public DepartmentDB() {
     }
 
-    public Department(String departamentId, String departamentName, String departamentDescription) {
+    public DepartmentDB(String departamentId, String departamentName, String departamentDescription) {
         this.department_id = departamentId;
         this.department_name = departamentName;
         this.department_description = departamentDescription;

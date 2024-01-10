@@ -1,6 +1,6 @@
 package javaspring.osutappjava.dto;
 
-public class Project {
+public class ProjectDB {
     // project_id, project_name, project_description, project_funding, department_id
 
     private String project_id;
@@ -9,10 +9,10 @@ public class Project {
     private int project_funding;
     private String department_id;
 
-    public Project() {
+    public ProjectDB() {
     }
 
-    public Project(String project_id, String project_name, String project_description, int project_funding, String department_id) {
+    public ProjectDB(String project_id, String project_name, String project_description, int project_funding, String department_id) {
         this.project_id = project_id;
         this.project_name = project_name;
         this.project_description = project_description;

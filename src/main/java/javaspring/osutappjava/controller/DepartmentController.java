@@ -3,6 +3,7 @@ package javaspring.osutappjava.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import javaspring.osutappjava.dto.*;
+import javaspring.osutappjava.dto.user.UserDB;
 import javaspring.osutappjava.model.DepartmentDataModel;
 import javaspring.osutappjava.model.service.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,20 +42,20 @@ public class DepartmentController {
             return "redirect:/login";
         }
         // if logged in, finds department data
-        Department department = departmentDataModel.getDepartment(department_id);
-        List<Project> projects = departmentDataModel.getDepartmentProjects(department_id);
-        List<User> users = departmentDataModel.getDepartmentUsers(department_id);
+        DepartmentDB department = departmentDataModel.getDepartment(department_id);
+        List<ProjectDB> projects = departmentDataModel.getDepartmentProjects(department_id);
+        List<UserDB> users = departmentDataModel.getDepartmentUsers(department_id);
 
         List<String> projectNames = new ArrayList<>();
         List<String> projectDescriptions = new ArrayList<>();
 
-        for (Project project : projects) {
+        for (ProjectDB project : projects) {
             projectNames.add(project.getProject_name());
             projectDescriptions.add(project.getProject_description());
         }
 
         List<String> userNames = new ArrayList<>();
-        for (User user : users) {
+        for (UserDB user : users) {
             userNames.add(user.getUser_id());
         }
 
@@ -64,7 +65,7 @@ public class DepartmentController {
         model.addAttribute("project_descriptions", projectDescriptions);
         model.addAttribute("user_names", userNames);
 
-        return "department";
+        return "department-view";
 
     }
 }

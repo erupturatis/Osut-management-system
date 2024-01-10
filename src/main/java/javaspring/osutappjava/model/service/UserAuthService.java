@@ -1,12 +1,11 @@
 package javaspring.osutappjava.model.service;
 
 import jakarta.servlet.http.Cookie;
-import javaspring.osutappjava.controller.UserController;
+import javaspring.osutappjava.dto.user.UserDB;
 import javaspring.osutappjava.model.StudentDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import javaspring.osutappjava.dto.UserData;
-
+import javaspring.osutappjava.dto.user.UserCookieData;
 
 @Service
 public class UserAuthService {
@@ -14,13 +13,13 @@ public class UserAuthService {
     @Autowired
     private StudentDataModel studentDataModel;
 
-    public UserData searchForLoginCookie(Cookie[] cookies) {
+    public UserCookieData searchForLoginCookie(Cookie[] cookies) {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 try{
                     String username = cookie.getValue().split("#")[0];
                     String userType = cookie.getValue().split("#")[1];
-                    return new UserData(username, userType);
+                    return new UserCookieData(username, userType);
                 } catch (Exception e) {
                     continue;
                 }

@@ -1,4 +1,4 @@
-package javaspring.osutappjava.controller;
+package javaspring.osutappjava.controller.user;
 
 import jakarta.servlet.http.HttpServletRequest;
 import javaspring.osutappjava.model.StudentDataModel;

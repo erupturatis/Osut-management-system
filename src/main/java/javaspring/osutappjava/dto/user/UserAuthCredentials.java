@@ -1,29 +1,29 @@
-package javaspring.osutappjava.dto;
+package javaspring.osutappjava.dto.user;
 
-public class UserCredentials {
+public class UserAuthCredentials {
+    // username, password
+
     private String username;
     private String password;
 
-    // Constructors, getters, and setters
-    public UserCredentials() {
+    public UserAuthCredentials() {
     }
 
-    public UserCredentials(String username, String password) {
+    public UserAuthCredentials(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    // Getters and setters for username and password
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getPassword() {
         return password;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setPassword(String password) {

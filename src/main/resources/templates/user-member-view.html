@@ -18,14 +18,10 @@
     Projects
 </h2>
 <ul>
-    <li th:each="project : ${projects}" th:text="${project}">Project Name</li>
+    <li th:each="project : ${projects}">
+        <a th:href="@{'/project/' + ${project.project_id}}" th:text="${project.project_name}">Project Name</a>
+    </li>
 </ul>
-<h2>
-    Roles
-</h2>
-<ul>
-    <li th:each="roles : ${roles}" th:text="${roles}">Role Name</li>
-</ul>
- <a th:if="${userType == 'ADMIN'}" th:href="@{'/' + ${name} + '/edit'}" class="edit-button">Edit</a>
+
 </body>
 </html>

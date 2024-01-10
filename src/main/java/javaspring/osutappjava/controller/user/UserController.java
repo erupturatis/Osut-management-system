@@ -1,8 +1,10 @@
-package javaspring.osutappjava.controller;
+package javaspring.osutappjava.controller.user;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import javaspring.osutappjava.dto.*;
+import javaspring.osutappjava.dto.user.UserCookieData;
+import javaspring.osutappjava.variables.UserVariables;
 import javaspring.osutappjava.model.StudentDataModel;
 import javaspring.osutappjava.model.service.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -23,55 +24,48 @@ public class UserController {
     @Autowired
     private UserAuthService userAuthService;
 
+    @Autowired
+    private UserVariables userVariables;
+
+
     @GetMapping("/{name}")
     public String index(@PathVariable String name, Model model, HttpServletRequest request) {
         model.addAttribute("name", name);
 
         boolean isLoggedIn = false;
-        String userType = null; // Could be "admin", "student", etc.
+        boolean userIsAdmin = false;
 
-        // Check for a specific cookie, e.g., "loginCookie"
+        // check for credentials saved in cookie
         Cookie[] cookies = request.getCookies();
-        UserData userData = null;
+        UserCookieData userData = null;
         try{
             userData = userAuthService.searchForLoginCookie(cookies);
             isLoggedIn = true;
-            userType = userData.getUserType();
+            userIsAdmin = userData.getIsAdmin();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
 
-        // add user type to model
-        model.addAttribute("userType", userType);
+        model.addAttribute(userVariables.USER_IS_ADMIN, userIsAdmin);
 
+        // not logged in
         if(!isLoggedIn) {
             return "redirect:/login";
         }
-        if(!userType.equalsIgnoreCase("admin") && !userData.getUsername().equalsIgnoreCase(name)) {
+
+        // not admin, nor owner of page
+        if(!userIsAdmin && !userData.getUsername().equalsIgnoreCase(name)) {
             return "redirect:/login";
         }
 
         // handle departments
-        List<Department> departments = studentDataModel.getDepartmentsForUser(name);
-
+        List<DepartmentDB> departments = studentDataModel.getDepartmentsForUser(name);
         model.addAttribute("departments", departments);
 
         // handle projects
-        List<Project> projects = studentDataModel.getProjectsForUser(name);
-        List<String> projectsNames = new ArrayList<>();
-        for (Project project : projects) {
-            projectsNames.add(project.getProject_name());
-        }
-        model.addAttribute("projects", projectsNames);
+        List<ProjectDB> projects = studentDataModel.getProjectsForUser(name);
+        model.addAttribute("projects", projects);
 
-        // handle user roles
-        List<Role> roles = studentDataModel.getRolesForUser(name);
-        List<String> rolesNames = new ArrayList<>();
-        for (Role role : roles) {
-            rolesNames.add(role.getRole_name());
-        }
-        model.addAttribute("roles", rolesNames);
-
-        return "home-student";
+        return "user-member-view";
     }
 }

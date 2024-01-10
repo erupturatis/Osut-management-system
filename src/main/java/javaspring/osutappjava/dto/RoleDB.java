@@ -1,6 +1,6 @@
 package javaspring.osutappjava.dto;
 
-public class Role {
+public class RoleDB {
     // role_id, role_name, role_description
 
     private String role_id;
@@ -8,9 +8,9 @@ public class Role {
     private String role_description;
 
    // Default constructor
-    public Role() {
+    public RoleDB() {
     }
-    public Role(String role_id, String role_name, String role_description) {
+    public RoleDB(String role_id, String role_name, String role_description) {
         this.role_id = role_id;
         this.role_name = role_name;
         this.role_description = role_description;

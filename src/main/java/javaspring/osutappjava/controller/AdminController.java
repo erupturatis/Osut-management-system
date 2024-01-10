@@ -3,6 +3,7 @@ package javaspring.osutappjava.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import javaspring.osutappjava.dto.*;
+import javaspring.osutappjava.dto.user.UserDB;
 import javaspring.osutappjava.model.StudentDataModel;
 import javaspring.osutappjava.model.service.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
@@ -55,14 +55,14 @@ public class AdminController {
         }
 
         // handle departments
-        List<Department> departments = studentDataModel.getDepartments();
+        List<DepartmentDB> departments = studentDataModel.getDepartments();
         model.addAttribute("departments", departments);
 
         // handle users
-        List<User> users = studentDataModel.getUsers(filter, sortByAttendance);
+        List<UserDB> users = studentDataModel.getUsers(filter, sortByAttendance);
         model.addAttribute("users", users);
 
-        return "home-admin";
+        return "user-admin-view";
     }
 
     @GetMapping("/create")
@@ -86,7 +86,7 @@ public class AdminController {
         if(!userType.equalsIgnoreCase("admin")) {
             return "redirect:/login";
         }
-        return "create";
+        return "user-create-view";
     }
 
     @PostMapping("/create-student")

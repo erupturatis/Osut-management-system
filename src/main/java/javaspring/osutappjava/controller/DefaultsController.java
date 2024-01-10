@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 
 @Controller
-public class ClientController {
+public class DefaultsController {
 
 
     @Autowired

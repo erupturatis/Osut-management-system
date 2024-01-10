@@ -1,4 +1,4 @@
-package javaspring.osutappjava.controller;
+package javaspring.osutappjava.controller.user;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,17 +49,17 @@ public class UserEditController {
             return "redirect:/admin";
         }
 
-        List<Department> departments = studentDataModel.getDepartmentsForUser(name);
-        List<Project> projects = studentDataModel.getProjectsForUser(name);
-        List<Department> allDepartments = studentDataModel.getDepartments();
-        List<Project> allProjects = studentDataModel.getProjects();
+        List<DepartmentDB> departments = studentDataModel.getDepartmentsForUser(name);
+        List<ProjectDB> projects = studentDataModel.getProjectsForUser(name);
+        List<DepartmentDB> allDepartments = studentDataModel.getDepartments();
+        List<ProjectDB> allProjects = studentDataModel.getProjects();
 
-        List<Department> nonJoinedDepartments = new ArrayList<>();
-        List<Project> nonJoinedProjects = new ArrayList<>();
+        List<DepartmentDB> nonJoinedDepartments = new ArrayList<>();
+        List<ProjectDB> nonJoinedProjects = new ArrayList<>();
 
-        for(Department department : allDepartments) {
+        for(DepartmentDB department : allDepartments) {
             boolean joined = false;
-            for(Department userDepartment : departments) {
+            for(DepartmentDB userDepartment : departments) {
                 if(department.getDepartment_id().equalsIgnoreCase(userDepartment.getDepartment_id())) {
                     joined = true;
                     break;
@@ -70,9 +70,9 @@ public class UserEditController {
             }
         }
 
-        for(Project project : allProjects) {
+        for(ProjectDB project : allProjects) {
             boolean joined = false;
-            for(Project userProject : projects) {
+            for(ProjectDB userProject : projects) {
                 if(project.getProject_id().equalsIgnoreCase(userProject.getProject_id())) {
                     joined = true;
                     break;
@@ -90,7 +90,7 @@ public class UserEditController {
         model.addAttribute("nonJoinedDepartments", nonJoinedDepartments);
         model.addAttribute("nonJoinedProjects", nonJoinedProjects);
 
-        return "edit-student";
+        return "user-edit-view";
     }
 
 }
