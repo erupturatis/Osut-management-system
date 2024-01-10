@@ -13,7 +13,8 @@
     <ul id="joinedDepartments">
         <li th:each="department : ${joinedDepartments}" th:id="${'dept-' + department.department_id}">
             <span th:text="${department.department_name}"></span>
-            <a th:href="@{'/' + ${name} + '/remove_department/' + ${department.department_id}}" class="button-link">Remove</a>
+            <a th:href="@{'/user' + '/' + ${name} + '/remove_department/' + ${department.department_id}}"
+               class="button-link">Remove</a>
         </li>
     </ul>
 </div>
@@ -23,27 +24,27 @@
     <ul id="nonJoinedDepartments">
         <li th:each="department : ${nonJoinedDepartments}" th:id="${'dept-' + department.department_id}">
             <span th:text="${department.department_name}"></span>
-            <a th:href="@{'/' + ${name} + '/add_department/' + ${department.department_id}}" class="button-link">Add</a>
+            <a th:href="@{'/user' + '/' + ${name} + '/add_department/' + ${department.department_id}}"
+               class="button-link">Add</a>
         </li>
     </ul>
 </div>
 
-<!-- Include similar sections for Projects -->
-
-
-<!-- Delete Button -->
-<form th:action="@{'/' + ${name} + '/delete'}" method="post">
+<form th:action="@{'/user' + '/' + ${name} + '/delete'}" method="post">
     <button type="submit" class="delete-button">Delete Student</button>
 </form>
 
-<!-- Update Username Form -->
-<form th:action="@{'/' + ${name} + '/new_user_id'}" method="post">
+<form th:action="@{'/user' + '/' + ${name} + '/new_user_id'}" method="post">
     <div>
         <label for="newUsername">New Username:</label>
         <input type="text" id="newUsername" name="newUsername" required>
     </div>
     <button type="submit">Update Username</button>
 </form>
+
+<div th:if="${isAdmin}">
+    <a th:href="@{'/admin'}" class="button">Back to admin dashboard</a>
+</div>
 
 </body>
 </html>

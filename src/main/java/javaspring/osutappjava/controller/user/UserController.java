@@ -1,12 +1,13 @@
 package javaspring.osutappjava.controller.user;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import javaspring.osutappjava.dto.*;
-import javaspring.osutappjava.dto.user.UserCookieData;
+import javaspring.osutappjava.middleware.UserMiddlewareAuth;
+import javaspring.osutappjava.variables.PathsVariables;
 import javaspring.osutappjava.variables.UserVariables;
-import javaspring.osutappjava.model.StudentDataModel;
-import javaspring.osutappjava.model.service.UserAuthService;
+import javaspring.osutappjava.model.UserDataModel;
+import javaspring.osutappjava.model.service.UserCookieService;
+import javaspring.osutappjava.variables.ViewVariables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,44 +20,38 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private StudentDataModel studentDataModel;
+    private UserDataModel studentDataModel;
 
     @Autowired
-    private UserAuthService userAuthService;
+    private UserCookieService userAuthService;
 
     @Autowired
     private UserVariables userVariables;
 
+    @Autowired
+    private UserMiddlewareAuth userMiddlewareAuth;
 
-    @GetMapping("/{name}")
+    @Autowired
+    private ViewVariables viewVariables;
+
+    @Autowired
+    private PathsVariables pathsVariables;
+
+    @GetMapping(PathsVariables.USER_MEMBER_PATH)
     public String index(@PathVariable String name, Model model, HttpServletRequest request) {
         model.addAttribute("name", name);
 
-        boolean isLoggedIn = false;
-        boolean userIsAdmin = false;
-
-        // check for credentials saved in cookie
-        Cookie[] cookies = request.getCookies();
-        UserCookieData userData = null;
-        try{
-            userData = userAuthService.searchForLoginCookie(cookies);
-            isLoggedIn = true;
-            userIsAdmin = userData.getIsAdmin();
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+        String redirect = userMiddlewareAuth.checkLoginAndOwner(request, name);
+        if (redirect != null) {
+            return redirect;
         }
 
-        model.addAttribute(userVariables.USER_IS_ADMIN, userIsAdmin);
-
-        // not logged in
-        if(!isLoggedIn) {
-            return "redirect:/login";
+        redirect = userMiddlewareAuth.checkUserExists(name);
+        if (redirect != null) {
+            return redirect;
         }
 
-        // not admin, nor owner of page
-        if(!userIsAdmin && !userData.getUsername().equalsIgnoreCase(name)) {
-            return "redirect:/login";
-        }
+        boolean isAdmin = userMiddlewareAuth.checkUserIsAdmin(request);
 
         // handle departments
         List<DepartmentDB> departments = studentDataModel.getDepartmentsForUser(name);
@@ -65,7 +60,13 @@ public class UserController {
         // handle projects
         List<ProjectDB> projects = studentDataModel.getProjectsForUser(name);
         model.addAttribute("projects", projects);
+        model.addAttribute("isAdmin", isAdmin);
 
-        return "user-member-view";
+        model.addAttribute("user_edit_path", PathsVariables.USER_EDIT_PATH);
+        model.addAttribute("department_path", PathsVariables.DEPARTMENT_PATH);
+        model.addAttribute("project_path", PathsVariables.PROJECT_PATH);
+
+        return viewVariables.getView(ViewVariables.viewEnum.USER_MEMBER_VIEW);
     }
+
 }

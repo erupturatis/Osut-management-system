@@ -2,7 +2,8 @@ package javaspring.osutappjava.controller.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import javaspring.osutappjava.model.UserModel;
+import javaspring.osutappjava.model.UserDataModel;
+import javaspring.osutappjava.variables.PathsVariables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,9 +17,12 @@ import javaspring.osutappjava.dto.user.UserDB;
 public class AuthRequestsController {
 
     @Autowired
-    private UserModel authModel;
+    private UserDataModel authModel;
 
-    @PostMapping("/login")
+    @Autowired
+    private PathsVariables pathsVariables;
+
+    @PostMapping(PathsVariables.AUTH_POST_PATH)
     public ResponseEntity<?> login(@RequestBody UserAuthCredentials credentials, HttpServletResponse response) {
         // get data input from user
         String username = credentials.getUsername();
@@ -27,13 +31,13 @@ public class AuthRequestsController {
         boolean isAuthenticated = false;
         UserDB user = null;
         // matches with database
-        try{
+        try {
             user = authModel.authUser(username, password);
-            if(user == null){
+            if (user == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
             }
             isAuthenticated = true;
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
         }
@@ -46,8 +50,7 @@ public class AuthRequestsController {
             cookie.setPath("/");
             response.addCookie(cookie);
 
-            // redirects to admin page if user is admin
-            return ResponseEntity.ok("User logged in successfully");
+            return ResponseEntity.ok("Login successful");
 
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");

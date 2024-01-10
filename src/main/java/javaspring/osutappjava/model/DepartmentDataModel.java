@@ -16,45 +16,52 @@ public class DepartmentDataModel {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-   public DepartmentDB getDepartment(String departmentId) {
+    public List<DepartmentDB> getDepartments() {
+        String sqlQuery = "SELECT * FROM department;";
+        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(DepartmentDB.class));
+    }
+
+    public DepartmentDB getDepartment(String departmentId) {
         String sqlQuery = "SELECT d.* " +
-                          "FROM department d " +
-                          "WHERE d.department_id = ?;";
+                "FROM public.department d " +
+                "WHERE d.department_id = ?;";
         try {
             return jdbcTemplate.queryForObject(sqlQuery, new Object[]{departmentId},
-                                               new BeanPropertyRowMapper<>(DepartmentDB.class));
+                    new BeanPropertyRowMapper<>(DepartmentDB.class));
         } catch (Exception e) {
             System.out.println("Error in fetching department: " + e.getMessage());
             return null;
         }
-   }
+    }
 
-   public List<ProjectDB> getDepartmentProjects(String departmentId) {
+    public List<ProjectDB> getDepartmentProjects(String departmentId) {
         String sqlQuery = "SELECT p.* " +
-                          "FROM public.project p " +
-                          "WHERE p.department_id = ?;";
+                "FROM public.project p " +
+                "WHERE p.department_id = ?;";
         try {
             return jdbcTemplate.query(sqlQuery, new Object[]{departmentId},
-                                      new BeanPropertyRowMapper<>(ProjectDB.class));
+                    new BeanPropertyRowMapper<>(ProjectDB.class));
         } catch (Exception e) {
             System.out.println("Error in fetching projects: " + e.getMessage());
             return null;
         }
-   }
+    }
 
-   public List<UserDB> getDepartmentUsers(String departmentId) {
+    public List<UserDB> getDepartmentUsers(String departmentId) {
         String sqlQuery = "SELECT u.* " +
-                          "FROM public.user u " +
-                          "INNER JOIN user_department ud ON u.user_id = ud.user_id " +
-                          "WHERE ud.department_id = ?;";
+                "FROM public.user u " +
+                "INNER JOIN user_department ud ON u.user_id = ud.user_id " +
+                "WHERE ud.department_id = ?;";
+
+        System.out.println("departmentId: " + departmentId);
 
         try {
             return jdbcTemplate.query(sqlQuery, new Object[]{departmentId},
-                                      new BeanPropertyRowMapper<>(UserDB.class));
+                    new BeanPropertyRowMapper<>(UserDB.class));
         } catch (Exception e) {
             System.out.println("Error in fetching users: " + e.getMessage());
             return null;
         }
-   }
+    }
 
 }

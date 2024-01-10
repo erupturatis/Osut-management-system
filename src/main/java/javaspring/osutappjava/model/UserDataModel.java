@@ -2,36 +2,21 @@ package javaspring.osutappjava.model;
 
 import javaspring.osutappjava.dto.*;
 import javaspring.osutappjava.dto.user.UserDB;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.ArrayList;
 
 @Repository
-public class StudentDataModel {
+public class UserDataModel {
 
-   @Autowired
-   private JdbcTemplate jdbcTemplate;
-
-
-   public List<DepartmentDB> getDepartments() {
-       String sqlQuery = "SELECT * FROM department;";
-       return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(DepartmentDB.class));
-   }
-
-
-   public List<UserDB> getUsers() {
-        String sqlQuery = "SELECT * FROM public.user;";
-        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(UserDB.class));
-   }
-
-    public List<ProjectDB> getProjects() {
-          String sqlQuery = "SELECT * FROM public.project;";
-          return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(ProjectDB.class));
-    }
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     public boolean checkUserExists(String userId) {
         String sqlQuery = "SELECT COUNT(*) FROM public.user WHERE user_id = ?;";
@@ -44,10 +29,28 @@ public class StudentDataModel {
         }
     }
 
+    public UserDB authUser(String username, String password) {
+        try {
+            String sql = "SELECT * FROM public.user WHERE user_id = ? AND user_password = ?";
+            return jdbcTemplate.queryForObject(sql, new Object[]{username, password}, (rs, rowNum) -> {
+                UserDB user = new UserDB();
+                user.setUser_id(rs.getString("user_id"));
+                user.setUser_password(rs.getString("user_password"));
+                user.setIs_admin(rs.getBoolean("is_admin"));
+                user.setAble_to_work(rs.getBoolean("able_to_work"));
+                user.setAge(rs.getInt("age"));
 
-    public List<UserDB> getUsers(Optional<String> filter, boolean sortByAttendance) {
+                return user;
+            });
+        } catch (DataAccessException e) {
+            System.out.println("Authentication failed: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public List<UserDB> getUsersWithFilters(Optional<String> filter, boolean sortByAttendance) {
         // Base SQL query
-        String sqlQuery = "SELECT u.*, COUNT(ua.attendance_id) as attendance_count " +
+        String sqlQuery = "SELECT u.*, COUNT(ua.general_meeting_id) as attendance_count " +
                 "FROM public.user u " +
                 "LEFT JOIN public.user_attendance ua ON u.user_id = ua.user_id ";
 
@@ -55,12 +58,12 @@ public class StudentDataModel {
         List<Object> params = new ArrayList<>();
         if (filter.isPresent() && !filter.get().isEmpty()) {
             sqlQuery += "JOIN public.user_department ud ON u.user_id = ud.user_id " +
-                    "WHERE ud.department_id = ?";
+                    "WHERE ud.department_id = ? ";
             params.add(filter.get());
         }
 
-        // Group by user to prepare for counting attendances
-        sqlQuery += " GROUP BY u.user_id ";
+        // Group by user_id to get the number of attendances per user
+        sqlQuery += "GROUP BY u.user_id ";
 
         // If sorting by attendance is requested, add an ORDER BY clause
         if (sortByAttendance) {
@@ -75,36 +78,17 @@ public class StudentDataModel {
         }
     }
 
-    public List<UserDB> getUsersForDepartment(String departmentId) {
-        String sqlQuery = "SELECT u.* " +
-                "FROM public.user u " +
-                "JOIN user_department ud ON u.user_id = ud.user_id " +
-                "JOIN department d ON ud.department_id = d.department_id " +
-                "WHERE d.department_id = ?;";
-
-        return jdbcTemplate.query(sqlQuery, new Object[]{departmentId},
-                new BeanPropertyRowMapper<>(UserDB.class));
-    }
-
-    public List<UserDB> getUsersSortedByAttendanceNumber() {
-        String sqlQuery = "SELECT u.* " +
-                "FROM public.user u " +
-                "ORDER BY u.attendance_number;";
-
-        return jdbcTemplate.query(sqlQuery,
-                new BeanPropertyRowMapper<>(UserDB.class));
-    }
-
     public List<DepartmentDB> getDepartmentsForUser(String userId) {
-       String sqlQuery = "SELECT d.* " +
-               "FROM department d " +
-               "JOIN user_department ud ON d.department_id = ud.department_id " +
-               "JOIN public.user u ON ud.user_id = u.user_id " +
-               "WHERE ud.user_id = ?;";
+        String sqlQuery = "SELECT d.* " +
+                "FROM department d " +
+                "JOIN user_department ud ON d.department_id = ud.department_id " +
+                "JOIN public.user u ON ud.user_id = u.user_id " +
+                "WHERE ud.user_id = ?;";
 
         return jdbcTemplate.query(sqlQuery, new Object[]{userId},
                 new BeanPropertyRowMapper<>(DepartmentDB.class));
     }
+
     public List<ProjectDB> getProjectsForUser(String userId) {
         String sqlQuery = "SELECT DISTINCT(p.*) " +
                 "FROM project p " +
@@ -127,8 +111,8 @@ public class StudentDataModel {
                 new BeanPropertyRowMapper<>(RoleDB.class));
     }
 
-    public boolean addUser(UserDB user){
-        String sqlQuery = "INSERT INTO public.user (user_id, user_password, user_type) VALUES (?, ?, ?);";
+    public boolean addUser(UserDB user) {
+        String sqlQuery = "INSERT INTO public.user (user_id, user_password, is_admin, age, able_to_work) VALUES (?, ?, ?, 10, true);";
         try {
             jdbcTemplate.update(sqlQuery, user.getUser_id(), user.getUser_password(), user.isIs_admin());
             return true;

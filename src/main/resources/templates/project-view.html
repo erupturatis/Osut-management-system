@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${project.project_name} + ' Project Details'">Project Details</title>
+</head>
+<body>
+
+<main>
+    <h1 th:text="${project.project_name}">Project Name</h1>
+    <p><strong>Description:</strong> <span th:text="${project.project_description}">Project Description</span></p>
+    <p><strong>Funding:</strong> <span th:text="${project.project_funding}">0</span></p>
+
+    <!-- Department Details -->
+    <section>
+        <h2>Department Information</h2>
+        <p>
+            <strong>Name:</strong>
+            <!-- Make department name clickable -->
+            <a th:href="@{${department_path}(department_id=${department.department_id})}"
+               th:text="${department.department_name}">
+                Department Name
+            </a>
+        </p>
+        <p><strong>Description:</strong> <span
+                th:text="${department.department_description}">Department Description</span></p>
+    </section>
+
+    <!-- User List -->
+    <section>
+        <h2>Users Assigned to Project</h2>
+        <ul>
+            <li th:each="user : ${users}">
+                <p>
+                    <strong>Name:</strong>
+                    <!-- Make user name clickable -->
+                    <a th:href="@{${user_path}(name=${user.user_id})}"
+                       th:text="${user.user_id}">
+                        User ID
+                    </a>
+                </p>
+            </li>
+        </ul>
+    </section>
+
+</main>
+
+</body>
+</html>

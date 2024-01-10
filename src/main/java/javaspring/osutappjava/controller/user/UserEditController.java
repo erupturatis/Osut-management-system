@@ -1,96 +1,84 @@
 package javaspring.osutappjava.controller.user;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import javaspring.osutappjava.dto.*;
-import javaspring.osutappjava.model.StudentDataModel;
-import javaspring.osutappjava.model.service.UserAuthService;
+import javaspring.osutappjava.middleware.UserMiddlewareAuth;
+import javaspring.osutappjava.model.DepartmentDataModel;
+import javaspring.osutappjava.model.UserDataModel;
+import javaspring.osutappjava.model.service.UserCookieService;
+import javaspring.osutappjava.variables.PathsVariables;
+import javaspring.osutappjava.variables.ViewVariables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
 import java.util.List;
+
 import org.springframework.web.bind.annotation.PathVariable;
+
 import java.util.ArrayList;
 
 @Controller
 public class UserEditController {
 
     @Autowired
-    private StudentDataModel studentDataModel;
+    private UserDataModel studentDataModel;
 
     @Autowired
-    private UserAuthService userAuthService;
+    private UserCookieService userAuthService;
 
-    @GetMapping("/{name}/edit")
+    @Autowired
+    private DepartmentDataModel departmentDataModel;
+
+    @Autowired
+    private UserMiddlewareAuth userMiddlewareAuth;
+
+    @Autowired
+    private ViewVariables viewVariables;
+
+    @Autowired
+    private PathsVariables pathsVariables;
+
+    @GetMapping(PathsVariables.USER_EDIT_PATH)
     public String index(@PathVariable String name, Model model, HttpServletRequest request) {
 
-        boolean isLoggedIn = false;
-        String userType = null;
-
-        Cookie[] cookies = request.getCookies();
-        UserData userData = null;
-        try{
-            userData = userAuthService.searchForLoginCookie(cookies);
-            isLoggedIn = true;
-            userType = userData.getUserType();
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+        String redirect = userMiddlewareAuth.checkLoginAndOwner(request, name);
+        if (redirect != null) {
+            return redirect;
         }
 
-        if(!isLoggedIn) {
-            return "redirect:/login";
-        }
-        if(!userType.equalsIgnoreCase("admin")) {
-            return "redirect:/login";
+        redirect = userMiddlewareAuth.checkUserExists(name);
+        if (redirect != null) {
+            return redirect;
         }
 
-        if(!studentDataModel.checkUserExists(name)) {
-            return "redirect:/admin";
-        }
+        boolean isAdmin = userMiddlewareAuth.checkUserIsAdmin(request);
 
         List<DepartmentDB> departments = studentDataModel.getDepartmentsForUser(name);
         List<ProjectDB> projects = studentDataModel.getProjectsForUser(name);
-        List<DepartmentDB> allDepartments = studentDataModel.getDepartments();
-        List<ProjectDB> allProjects = studentDataModel.getProjects();
+        List<DepartmentDB> allDepartments = departmentDataModel.getDepartments();
 
         List<DepartmentDB> nonJoinedDepartments = new ArrayList<>();
-        List<ProjectDB> nonJoinedProjects = new ArrayList<>();
-
-        for(DepartmentDB department : allDepartments) {
+        for (DepartmentDB department : allDepartments) {
             boolean joined = false;
-            for(DepartmentDB userDepartment : departments) {
-                if(department.getDepartment_id().equalsIgnoreCase(userDepartment.getDepartment_id())) {
+            for (DepartmentDB userDepartment : departments) {
+                if (department.getDepartment_id().equalsIgnoreCase(userDepartment.getDepartment_id())) {
                     joined = true;
                     break;
                 }
             }
-            if(!joined) {
+            if (!joined) {
                 nonJoinedDepartments.add(department);
             }
         }
 
-        for(ProjectDB project : allProjects) {
-            boolean joined = false;
-            for(ProjectDB userProject : projects) {
-                if(project.getProject_id().equalsIgnoreCase(userProject.getProject_id())) {
-                    joined = true;
-                    break;
-                }
-            }
-            if(!joined) {
-                nonJoinedProjects.add(project);
-            }
-        }
-
         model.addAttribute("name", name);
+        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("joinedDepartments", departments);
-        model.addAttribute("joinedProjects", projects);
-
         model.addAttribute("nonJoinedDepartments", nonJoinedDepartments);
-        model.addAttribute("nonJoinedProjects", nonJoinedProjects);
 
-        return "user-edit-view";
+        return viewVariables.getView(ViewVariables.viewEnum.USER_EDIT_VIEW);
     }
 
 }

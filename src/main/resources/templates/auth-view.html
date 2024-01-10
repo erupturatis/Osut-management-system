@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Login page</title>
-    <script>
+    <script th:inline="javascript">
         // Function to handle the form submission
         function submitForm(event) {
             // Prevent the default form submission
@@ -13,6 +13,8 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
+            const pathToUser = [[${pathToUser}]];
+
             // Create a JSON object with the data
             const data = {
                 username: username,
@@ -20,22 +22,22 @@
             };
 
             // Send the data using fetch
-            fetch('/login', {
+            fetch('/auth', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', // Set the content type to JSON
                 },
                 body: JSON.stringify(data), // Convert the JSON object to a string
             })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success:', data);
-                    // redurect to /{name}
-                    window.location.href = "/" + data.name;
+                .then(message => {
+                    console.log("Message: " + message);
+                    console.log(data);
+                    console.log("here is data here", pathToUser)
+                    const redirectLocation = pathToUser.replace("{name}", username);
+                    window.location.href = redirectLocation;
                 })
                 .catch((error) => {
                     console.error('Error:', error);
-                    // Handle errors, e.g., display an error message
                 });
         }
 

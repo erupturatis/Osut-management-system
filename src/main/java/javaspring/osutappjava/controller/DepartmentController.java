@@ -1,17 +1,19 @@
 package javaspring.osutappjava.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import javaspring.osutappjava.dto.*;
 import javaspring.osutappjava.dto.user.UserDB;
+import javaspring.osutappjava.middleware.UserMiddlewareAuth;
 import javaspring.osutappjava.model.DepartmentDataModel;
-import javaspring.osutappjava.model.service.UserAuthService;
+import javaspring.osutappjava.model.service.UserCookieService;
+import javaspring.osutappjava.variables.PathsVariables;
+import javaspring.osutappjava.variables.ViewVariables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Controller
@@ -21,51 +23,34 @@ public class DepartmentController {
     private DepartmentDataModel departmentDataModel;
 
     @Autowired
-    private UserAuthService userAuthService;
+    private UserCookieService userAuthService;
 
-    @GetMapping("/department/{department_id}")
+    @Autowired
+    private UserMiddlewareAuth userMiddlewareAuth;
+
+    @Autowired
+    private ViewVariables viewVariables;
+
+    @GetMapping(PathsVariables.DEPARTMENT_PATH)
     public String index(@PathVariable String department_id, Model model, HttpServletRequest request) {
         model.addAttribute("department_id", department_id);
 
-        boolean isLoggedIn = false;
-        String userType = null;
-        Cookie[] cookies = request.getCookies();
-        try{
-            UserData userData = userAuthService.searchForLoginCookie(cookies);
-            isLoggedIn = true;
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return "redirect:/login";
-        }
+        userMiddlewareAuth.checkLogin(request);
 
-        if(!isLoggedIn) {
-            return "redirect:/login";
-        }
-        // if logged in, finds department data
         DepartmentDB department = departmentDataModel.getDepartment(department_id);
         List<ProjectDB> projects = departmentDataModel.getDepartmentProjects(department_id);
         List<UserDB> users = departmentDataModel.getDepartmentUsers(department_id);
 
-        List<String> projectNames = new ArrayList<>();
-        List<String> projectDescriptions = new ArrayList<>();
 
-        for (ProjectDB project : projects) {
-            projectNames.add(project.getProject_name());
-            projectDescriptions.add(project.getProject_description());
-        }
+        model.addAttribute("department", department);
+        model.addAttribute("projects", projects);
+        model.addAttribute("users", users);
 
-        List<String> userNames = new ArrayList<>();
-        for (UserDB user : users) {
-            userNames.add(user.getUser_id());
-        }
+        model.addAttribute("user_path", PathsVariables.USER_MEMBER_PATH);
+        model.addAttribute("project_path", PathsVariables.PROJECT_PATH);
+        model.addAttribute("department_path", PathsVariables.DEPARTMENT_PATH);
 
-        model.addAttribute("department_name", department.getDepartment_name());
-        model.addAttribute("department_description", department.getDepartment_description());
-        model.addAttribute("project_names", projectNames);
-        model.addAttribute("project_descriptions", projectDescriptions);
-        model.addAttribute("user_names", userNames);
-
-        return "department-view";
+        return viewVariables.getView(ViewVariables.viewEnum.DEPARTMENT_VIEW);
 
     }
 }

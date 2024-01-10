@@ -11,7 +11,9 @@
 </h2>
 <ul>
     <li th:each="department : ${departments}">
-        <a th:href="@{'/department/' + ${department.department_id}}" th:text="${department.department_name}">Department Name</a>
+        <a th:href="@{${department_path}(department_id=${department.department_id})}"
+           th:text="${department.department_name}">Department
+            Name</a>
     </li>
 </ul>
 <h2>
@@ -19,9 +21,14 @@
 </h2>
 <ul>
     <li th:each="project : ${projects}">
-        <a th:href="@{'/project/' + ${project.project_id}}" th:text="${project.project_name}">Project Name</a>
+        <a th:href="@{${project_path}(project_id=${project.project_id})}" th:text="${project.project_name}">Project
+            Name</a>
     </li>
 </ul>
+
+<div th:if="${isAdmin}">
+    <a th:href="@{${user_edit_path}(name=${name})}" class="button">Edit User</a>
+</div>
 
 </body>
 </html>

@@ -18,7 +18,8 @@
         <ul>
             <li th:each="department : ${departments}">
                 <label th:for="${'dept-' + department.department_id}">
-                    <input type="radio" th:id="${'dept-' + department.department_id}" th:name="filter" th:value="${department.department_id}">
+                    <input type="radio" th:id="${'dept-' + department.department_id}" th:name="filter"
+                           th:value="${department.department_id}">
                     <span th:text="${department.department_name}">Department Name</span>
                 </label>
             </li>
@@ -40,11 +41,23 @@
     <h2>Students</h2>
     <ul>
         <li th:each="user : ${users}">
-            <a th:href="@{'/' + ${user.user_id}}" th:text="${user.user_id}">User Name</a>
+            <a th:href="@{${user_path}(name=${user.user_id})}" th:text="${user.user_id}">User Name</a>
         </li>
     </ul>
 </div>
-<a href="/create" class="create-button">Create Student</a>
 
+<a href="/user/create" class="create-button">Create Student</a>
+
+<section>
+    <h2>All Departments</h2>
+    <ul>
+        <li th:each="dept : ${departments}">
+            <a th:href="@{${department_path}(department_id=${dept.department_id})}"
+               th:text="${dept.department_name}">
+                Department Name
+            </a>
+        </li>
+    </ul>
+</section>
 </body>
 </html>

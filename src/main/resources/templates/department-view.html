@@ -2,34 +2,45 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${department_name} + ' Department'">Department</title>
+    <title th:text="${department.department_name} + ' Department Details'">Department Details</title>
 </head>
 <body>
 
 <div>
-    <h1 th:text="${department_name}">Department Name</h1>
-    <p th:text="${department_description}">Department Description</p>
-</div>
+    <h1>DEPARTMENT PAGE</h1>
 
-<div>
-    <h2>Projects</h2>
+    <!-- Display department details -->
+    <h2>
+        Department Name:
+        <a th:href="@{${department_path}(department_id=${department.department_id})}"
+           th:text="${department.department_name}">
+            Department Name
+        </a>
+    </h2>
+    <p>Description: <span th:text="${department.department_description}"></span></p>
+
+    <!-- List of projects in the department -->
+    <h3>Projects:</h3>
     <ul>
-        <li th:each="projectName, stat : ${project_names}" th:text="${projectName}">Project Name</li>
+        <li th:each="project : ${projects}">
+            <a th:href="@{${project_path}(project_id=${project.project_id})}" th:text="${project.project_name}">
+                Project Name
+            </a> -
+            <span th:text="${project.project_description}">Project Description</span> -
+            Funding: <span th:text="${project.project_funding}">0</span>
+        </li>
     </ul>
-</div>
 
-<div>
-    <h2>Project Descriptions</h2>
+    <!-- List of users in the department -->
+    <h3>Users:</h3>
     <ul>
-        <li th:each="projectDesc, stat : ${project_descriptions}" th:text="${projectDesc}">Project Description</li>
-    </ul>
-</div>
-
-<div>
-    <h2>Users</h2>
-    <ul>
-        <li th:each="userName : ${user_names}">
-            <a th:href="@{'/' + ${userName}}" th:text="${userName}">User Name</a>
+        <li th:each="user : ${users}">
+            <a th:href="@{${user_path}(name=${user.user_id})}">
+                <span th:text="${user.user_id}">User ID</span>
+            </a>,
+            Age: <span th:text="${user.age}">Age</span>,
+            Admin: <span th:text="${user.is_admin ? 'Yes' : 'No'}">Admin Status</span>,
+            Able to Work: <span th:text="${user.able_to_work ? 'Yes' : 'No'}">Work Status</span>
         </li>
     </ul>
 </div>

@@ -1,59 +1,55 @@
 package javaspring.osutappjava.controller.user;
 
 import jakarta.servlet.http.HttpServletRequest;
-import javaspring.osutappjava.model.StudentDataModel;
-import javaspring.osutappjava.model.service.UserAuthService;
+import javaspring.osutappjava.model.UserDataModel;
+import javaspring.osutappjava.model.service.UserCookieService;
+import javaspring.osutappjava.variables.PathsPostVariables;
+import javaspring.osutappjava.variables.PathsVariables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class UserEditCRUDController {
 
     @Autowired
-    private StudentDataModel studentDataModel;
+    private UserDataModel studentDataModel;
 
     @Autowired
-    private UserAuthService userAuthService;
+    private UserCookieService userAuthService;
 
-    @GetMapping("/{name}/remove_department/{departmentId}")
+    @Autowired
+    private PathsVariables pathsVariables;
+
+    @Autowired
+    private PathsPostVariables pathsPostVariables;
+
+    @GetMapping(PathsPostVariables.REMOVE_DEPARTMENT_PATH)
     public String removeDepartment(@PathVariable String name, @PathVariable String departmentId, Model model, HttpServletRequest request) {
         studentDataModel.removeDepartmentFromUser(name, departmentId);
-        return "redirect:/{name}/edit";
+        return pathsVariables.prefixRedirect() + pathsVariables.buildUserMemberEditPath(name);
     }
 
-    @GetMapping("/{name}/remove_project/{projectId}")
-    public String removeProject(@PathVariable String name, @PathVariable String projectId, Model model, HttpServletRequest request) {
-        studentDataModel.removeProjectFromUser(name, projectId);
-        return "redirect:/{name}/edit";
-    }
-
-    @GetMapping("/{name}/add_department/{departmentId}")
+    @GetMapping(PathsPostVariables.ADD_DEPARTMENT_PATH)
     public String addDepartment(@PathVariable String name, @PathVariable String departmentId, Model model, HttpServletRequest request) {
         studentDataModel.addDepartmentToUser(name, departmentId);
-        return "redirect:/{name}/edit";
+        return pathsVariables.prefixRedirect() + pathsVariables.buildUserMemberEditPath(name);
     }
 
-    @GetMapping("/{name}/add_project/{projectId}")
-    public String addProject(@PathVariable String name, @PathVariable String projectId, Model model, HttpServletRequest request) {
-        studentDataModel.addProjectToUser(name, projectId);
-        return "redirect:/{name}/edit";
-    }
-
-    @PostMapping("/{name}/delete")
+    @PostMapping(PathsPostVariables.DELETE_USER_PATH)
     public String delete(@PathVariable String name, Model model, HttpServletRequest request) {
         studentDataModel.deleteUser(name);
-        return "redirect:/admin";
+        return pathsVariables.prefixRedirect() + pathsVariables.USER_ADMIN_PATH;
     }
 
-    @PostMapping("/{name}/new_user_id")
+    @PostMapping(PathsPostVariables.CHANGE_USER_ID_PATH)
     public String changeUserId(@PathVariable String name, @RequestParam("newUsername") String newUsername, Model model, HttpServletRequest request) {
-        studentDataModel.changeUserId(name, newUsername);
-        return "redirect:/{name}/edit";
+        boolean ok = studentDataModel.changeUserId(name, newUsername);
+        if (!ok) {
+            return pathsVariables.prefixRedirect() + pathsVariables.buildUserMemberEditPath(name);
+        }
+        return pathsVariables.prefixRedirect() + pathsVariables.buildUserMemberEditPath(newUsername);
     }
 
 }
