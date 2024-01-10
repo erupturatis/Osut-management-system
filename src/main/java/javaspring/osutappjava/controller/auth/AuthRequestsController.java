@@ -1,5 +1,6 @@
 package javaspring.osutappjava.controller.auth;
 
+import com.zaxxer.hikari.util.SuspendResumeLock;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import javaspring.osutappjava.model.UserDataModel;
@@ -33,10 +34,13 @@ public class AuthRequestsController {
         // matches with database
         try {
             user = authModel.authUser(username, password);
+            System.out.println(user);
             if (user == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
+                System.out.println("User is NULL");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed user NULL");
+            } else {
+                isAuthenticated = true;
             }
-            isAuthenticated = true;
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
@@ -49,7 +53,6 @@ public class AuthRequestsController {
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             response.addCookie(cookie);
-
             return ResponseEntity.ok("Login successful");
 
         } else {

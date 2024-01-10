@@ -100,17 +100,6 @@ public class UserDataModel {
                 new BeanPropertyRowMapper<>(ProjectDB.class));
     }
 
-    public List<RoleDB> getRolesForUser(String userId) {
-        String sqlQuery = "SELECT r.* " +
-                "FROM role r " +
-                "JOIN user_role ur ON r.role_id = ur.role_id " +
-                "JOIN public.user u ON ur.user_id = u.user_id " +
-                "WHERE ur.user_id = ?;";
-
-        return jdbcTemplate.query(sqlQuery, new Object[]{userId},
-                new BeanPropertyRowMapper<>(RoleDB.class));
-    }
-
     public boolean addUser(UserDB user) {
         String sqlQuery = "INSERT INTO public.user (user_id, user_password, is_admin, age, able_to_work) VALUES (?, ?, ?, 10, true);";
         try {
@@ -144,17 +133,6 @@ public class UserDataModel {
         }
     }
 
-    public boolean removeProjectFromUser(String userId, String projectId) {
-        String sqlQuery = "DELETE FROM user_project WHERE user_id = ? AND project_id = ?;";
-        try {
-            jdbcTemplate.update(sqlQuery, userId, projectId);
-            return true;
-        } catch (Exception e) {
-            System.out.println("Error in removing project from user: " + e.getMessage());
-            return false;
-        }
-    }
-
     public boolean addDepartmentToUser(String userId, String departmentId) {
         String sqlQuery = "INSERT INTO user_department (user_id, department_id) VALUES (?, ?);";
         try {
@@ -162,17 +140,6 @@ public class UserDataModel {
             return true;
         } catch (Exception e) {
             System.out.println("Error in adding department to user: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean addProjectToUser(String userId, String projectId) {
-        String sqlQuery = "INSERT INTO user_project (user_id, project_id) VALUES (?, ?);";
-        try {
-            jdbcTemplate.update(sqlQuery, userId, projectId);
-            return true;
-        } catch (Exception e) {
-            System.out.println("Error in adding project to user: " + e.getMessage());
             return false;
         }
     }

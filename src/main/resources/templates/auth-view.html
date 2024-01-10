@@ -30,9 +30,10 @@
                 body: JSON.stringify(data), // Convert the JSON object to a string
             })
                 .then(message => {
-                    console.log("Message: " + message);
-                    console.log(data);
-                    console.log("here is data here", pathToUser)
+                    if (message.status !== 200) {
+                        window.alert("Wrong username or password");
+                        return;
+                    }
                     const redirectLocation = pathToUser.replace("{name}", username);
                     window.location.href = redirectLocation;
                 })
