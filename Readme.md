@@ -4,6 +4,7 @@
 
 Osut management app is a system designed for managing a student organization. It offers a robust platform for handling
 departments, projects, roles, and user interactions within the organization.
+You can find the github repo [Here](https://github.com/erupturatis/Osut-management-system)
 You can login in the app either:
 
 * **admin** accounts which can visualize everything and change user
