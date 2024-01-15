@@ -6,22 +6,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import javaspring.osutappjava.variables.PathsVariables;
 
 
 @Controller
 public class DefaultsController {
 
+    @Autowired
+    private PathsVariables pathsVariables;
 
     @GetMapping("/")
     public String index(HttpServletRequest request) {
         // Check for a cookie named 'loginCookie' (or whatever your login cookie is named)
-        return "redirect:/auth-view";
+        return pathsVariables.prefixRedirect() + pathsVariables.getAuthPath();
     }
 
     @RequestMapping(value = "/**")
-    @ResponseBody
     public String fallbackMethod() {
-        return "Path not recognized. Please check your URL and try again.";
+        return pathsVariables.prefixRedirect() + pathsVariables.getAuthPath();
     }
 
 }

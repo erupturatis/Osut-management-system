@@ -54,6 +54,9 @@ public class UserEditController {
         }
 
         boolean isAdmin = userMiddlewareAuth.checkUserIsAdmin(request);
+        if (!isAdmin) {
+            return pathsVariables.prefixRedirect() + pathsVariables.buildUserMemberPath(name);
+        }
 
         List<DepartmentDB> departments = studentDataModel.getDepartmentsForUser(name);
         List<ProjectDB> projects = studentDataModel.getProjectsForUser(name);

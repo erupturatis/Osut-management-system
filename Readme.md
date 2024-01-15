@@ -19,6 +19,13 @@ You can login in the app either:
 - **Build Tool**: Gradle
 - **Database**: PostgreSQL
 
+### Setting up database
+
+* This project uses PostgreSQL as a database. To set it up, you need to install PostgreSQL and create a database called
+  osutdb ( or change the name inside application.properties )
+* Then connect to the database and run the `dump-osutdb.sql` SQL file to create the tables and insert the data.
+* Also make sure password, username, database name and port are correct inside `application.properties` file.
+
 ### Running the Project
 
 1. **Configuration**: Check `src/main/resources` for application properties. Adjust the database URL, username, and
@@ -51,6 +58,32 @@ The main CRUD operation is user-centric, allowing for:
 - **Delete**: Delete users
 
 Paths for CRUD operations are defined in `PathsPostVariables`.
+
+## API Paths Documentation
+
+- `/auth-view`
+    - Displays the authentication view page for users to login or authenticate.
+
+- `/admin`
+    - Provides access to the admin dashboard for system management if you are logged in as admin.
+
+- `/user/{name}`
+    - Retrieves the profile information of a specific user identified by their username.
+
+- `/user/{name}/edit`
+    - Endpoint designated for editing the details of a specific user as an Admin.
+
+- `/user/create`
+    - Used for creating a new user account in the system as an Admin.
+
+- `/department/{department_id}`
+    - Fetches information related to a specific department, identified by its unique ID.
+
+- `/logout`
+    - Handles user logout functionality, ending the current user session.
+
+- `/project/{project_id}`
+    - Retrieves details about a specific project, identified by its unique project ID.
 
 The project also has the additional properties
 

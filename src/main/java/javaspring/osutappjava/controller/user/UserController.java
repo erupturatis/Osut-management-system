@@ -41,7 +41,7 @@ public class UserController {
     public String index(@PathVariable String name, Model model, HttpServletRequest request) {
         model.addAttribute("name", name);
 
-        String redirect = userMiddlewareAuth.checkLoginAndOwner(request, name);
+        String redirect = userMiddlewareAuth.checkLogin(request);
         if (redirect != null) {
             return redirect;
         }
@@ -65,6 +65,7 @@ public class UserController {
         model.addAttribute("user_edit_path", PathsVariables.USER_EDIT_PATH);
         model.addAttribute("department_path", PathsVariables.DEPARTMENT_PATH);
         model.addAttribute("project_path", PathsVariables.PROJECT_PATH);
+        model.addAttribute("admin_path", PathsVariables.USER_ADMIN_PATH);
 
         return viewVariables.getView(ViewVariables.viewEnum.USER_MEMBER_VIEW);
     }

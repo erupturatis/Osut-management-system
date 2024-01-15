@@ -35,7 +35,10 @@ public class DepartmentController {
     public String index(@PathVariable String department_id, Model model, HttpServletRequest request) {
         model.addAttribute("department_id", department_id);
 
-        userMiddlewareAuth.checkLogin(request);
+        String redirect = userMiddlewareAuth.checkLogin(request);
+        if (redirect != null) {
+            return redirect;
+        }
 
         DepartmentDB department = departmentDataModel.getById(department_id);
         List<ProjectDB> projects = departmentDataModel.getDepartmentProjects(department_id);

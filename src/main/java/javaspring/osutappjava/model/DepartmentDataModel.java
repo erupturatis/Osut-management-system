@@ -50,8 +50,6 @@ public class DepartmentDataModel extends BaseModel {
                 "INNER JOIN user_department ud ON u.user_id = ud.user_id " +
                 "WHERE ud.department_id = ?;";
 
-        System.out.println("departmentId: " + departmentId);
-
         try {
             return getJdbcTemplate().query(sqlQuery, new Object[]{departmentId},
                     new BeanPropertyRowMapper<>(UserDB.class));
